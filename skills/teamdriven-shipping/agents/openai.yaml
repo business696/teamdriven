@@ -1,0 +1,4 @@
+interface:
+  display_name: "팀드리븐 출고 관리"
+  short_description: "배송 접수·이월·누락을 날짜별 통합 시트 하나로 관리합니다"
+  default_prompt: "$teamdriven-shipping으로 오늘 배송 접수와 이월·누락 건을 합쳐 통합 출고 시트를 만들어줘."
