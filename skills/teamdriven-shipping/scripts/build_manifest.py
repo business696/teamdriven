@@ -21,8 +21,11 @@ def phone_key(value):
 
 
 def scheduled_date(record, holidays):
-    if record.get("ship_date"):
-        return date.fromisoformat(record["ship_date"])
+    explicit = date.fromisoformat(record["ship_date"]) if record.get("ship_date") else None
+    if not record.get("received_at"):
+        if explicit is not None:
+            return explicit  # Historical migration with an evidenced shipping date.
+        raise ValueError("received_at or an evidenced historical ship_date is required")
     received = datetime.fromisoformat(record["received_at"])
     if received.tzinfo is None:
         raise ValueError("received_at must include a timezone")
@@ -32,7 +35,11 @@ def scheduled_date(record, holidays):
         day += timedelta(days=1)
     while day.weekday() >= 5 or day in holidays:
         day += timedelta(days=1)
-    return day
+    if explicit is not None and explicit < day:
+        evidence = record.get("cutoff_override_evidence")
+        if record.get("cutoff_override_confirmed") is not True or not isinstance(evidence, str) or not evidence.strip():
+            raise ValueError("ship_date is before the cutoff schedule; a direct user-confirmed exception and its evidence are required")
+    return explicit if explicit is not None else day
 
 
 def build_manifest(ledger, target):
