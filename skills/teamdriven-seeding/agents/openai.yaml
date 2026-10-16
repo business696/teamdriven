@@ -1,0 +1,5 @@
+interface:
+  display_name: "팀드리븐 무가 시딩"
+  short_description: "위시어 후보 검증부터 신규 컨택·메이드 주소 취합·CS 정리까지"
+  default_prompt: "$teamdriven-seeding 스킬로 위시어 무가 시딩 업무를 이어가고, 최신 기준과 발송 기록을 먼저 확인해줘."
+
