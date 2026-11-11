@@ -1,4 +1,4 @@
 interface:
   display_name: "메가셀러 DM 컨택"
-  short_description: "어사이드 DM 이력 확인, 중복 방지와 승인된 컨택 발송·기록"
-  default_prompt: "$mega-seller-dm으로 메가셀러 명단의 실제 DM 이력을 확인하고 승인된 문구로 컨택해줘."
+  short_description: "어사이드의 Meta 마케팅허브에서 컨택 이력 확인·발송·Notion 기록"
+  default_prompt: "$mega-seller-dm으로 어사이드의 마케팅허브에서 기존 컨택 이력을 확인하고 승인된 문구로 컨택해줘."
