@@ -1,0 +1,55 @@
+{
+  "version": "2026-11-13-shared-draft-only",
+  "purpose": "Draft-only contract. No sender, scheduler, queue, or durable storage is configured.",
+  "input_required": {
+    "conversation_id": "provider-stable conversation identifier",
+    "channel": "instagram_dm | email | other",
+    "account_id": "business account identifier",
+    "first_offer": {
+      "message_id": "stable ID",
+      "purpose": "free_seeding_personal_reel",
+      "terms_verbatim": "original proposal text"
+    },
+    "messages": [
+      {
+        "message_id": "stable ID",
+        "author": "creator|human|automation",
+        "timestamp": "ISO-8601",
+        "body": "text",
+        "attachments": "summary"
+      }
+    ],
+    "history": {
+      "acceptance": "accepted|not_accepted|unclear",
+      "address": "structured or null",
+      "guide_sent_message_id": "ID or null",
+      "human_reply_message_ids": [],
+      "delivery_status": "not_started|confirmed|unknown"
+    },
+    "approved_guide_verbatim": "verbatim original or null",
+    "delivery_idempotency": {
+      "inbound_message_ids": [],
+      "outbound_message_ids": [],
+      "send_attempts": [],
+      "stable_inbound_key": "account_id + channel + conversation_id + inbound_message_id; independent of draft_version"
+    },
+    "pre_send_refresh": {
+      "latest_message_id": "ID",
+      "human_reply_seen": false
+    }
+  },
+  "output_required": {
+    "questions": "array; every question/condition separately classified",
+    "reply_draft": "one integrated external-facing draft, or null",
+    "acceptance_confirmed": "boolean",
+    "shipment_hold": "boolean",
+    "sky_escalation": "required/reason/payload",
+    "dedupe_state": "new|duplicate_skip|human_handled_skip|send_unknown_hold",
+    "next_action": "draft-only action",
+    "send_allowed": false
+  },
+  "example": {
+    "input_summary": "무가 개인 릴스 제안에 미해결 조건 없이 주소만 회신",
+    "output_summary": "주소 취합, 승인 가이드 원문 무변경 삽입 필요, 실제 출고·발송은 실행하지 않음"
+  }
+}
