@@ -1,6 +1,6 @@
 # 메가셀러 DM 컨택 스킬
 
-**어사이드에서 Meta 마케팅허브로 컨택**하는 Codex 스킬입니다. 허브·기존 컨택 이력 확인 → 대상 선별 → 링크 포함 위시어 확정 문구 → 승인된 허브 메시지 발송 → Notion 기록을 처리합니다. 일반 Instagram DM으로 대체하지 않습니다.
+**어사이드에서 Meta 마케팅허브로 컨택**하는 Codex·Claude 업무 스킬입니다. 허브·기존 컨택 이력 확인 → 대상 선별 → 링크 포함 위시어 확정 문구 → 승인된 허브 메시지 발송 → Notion 기록을 처리합니다. 일반 Instagram DM으로 대체하지 않습니다.
 
 ## 설치와 첫 실행
 
@@ -15,7 +15,7 @@ $skill-installer https://github.com/business696/teamdriven/tree/main/skills/mega
 설정할 항목은 다섯 가지입니다.
 
 1. 발신 Instagram ID
-2. 담당자명 (기본 김하늘)
+2. 실제 담당자명 (설정 필수)
 3. Notion 인플루언서 DB URL
 4. Notion 일자별 메가셀러 리스트 URL
 5. Meta 마케팅허브 URL (어사이드에서 로그인·브랜드 선택 후 주소 복사)

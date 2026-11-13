@@ -22,14 +22,29 @@ class SeedingToolsTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 normalize_id(invalid)
 
-    def test_only_salutation_changes(self):
+    def test_contact_requires_real_sender(self):
         raw = (Path(__file__).resolve().parents[1] / "assets/contact.txt").read_text(encoding="utf-8-sig").strip()
-        self.assertEqual(render_message("contact", "활동명"), raw.replace("[호칭]", "활동명님 "))
-        self.assertEqual(render_message("contact"), raw.replace("[호칭]", ""))
-        address = (Path(__file__).resolve().parents[1] / "assets/address-guide.txt").read_text(encoding="utf-8-sig").strip()
-        self.assertEqual(render_message("address"), address)
+        actual = render_message("contact", "활동명", "테스트담당자")
+        self.assertEqual(actual, raw.replace("[호칭]", "활동명님 ").replace("[담당자명]", "테스트담당자"))
+        self.assertNotIn("김하늘", actual)
+        self.assertNotIn("[", actual)
+        self.assertNotIn("[호칭]", render_message("contact", contact_name="테스트담당자"))
         with self.assertRaises(ValueError):
-            render_message("contact", "one\ntwo")
+            render_message("contact", "활동명")
+        for bad in ["one\ntwo", "[미입력]", "https://example.com"]:
+            with self.assertRaises(ValueError):
+                render_message("contact", bad, "테스트담당자")
+
+    def test_guide_requires_agreed_schedule(self):
+        raw = (Path(__file__).resolve().parents[1] / "assets/address-guide.txt").read_text(encoding="utf-8-sig").strip()
+        schedule = "합의한 날짜에 업로드 부탁드립니다."
+        actual = render_message("address", "활동명", upload_schedule=schedule)
+        self.assertEqual(actual, raw.replace("[이름]", "활동명").replace("[희망 업로드 일정 문구]", schedule))
+        self.assertNotIn("[", actual)
+        self.assertTrue(render_message("address", upload_schedule=schedule).startswith("안녕하세요!"))
+        for schedule in [None, "", "[날짜]"]:
+            with self.assertRaises(ValueError):
+                render_message("address", "활동명", upload_schedule=schedule)
 
     def test_kst_day_not_utc_day_and_reply_exclusion(self):
         data = [sent("alpha", "2026-10-15T15:01:00Z", "2026-10-15T15:01:05Z"),

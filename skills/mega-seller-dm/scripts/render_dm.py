@@ -14,7 +14,7 @@ def clean_name(value):
     return value
 
 
-def render(name, contact_name="김하늘"):
+def render(name, contact_name):
     template = (ROOT / "assets" / "dm.txt").read_text(encoding="utf-8")
     if "[이름]" not in template or "[담당자명]" not in template:
         raise ValueError("확정 문구의 이름·담당자명 치환 위치가 없습니다.")
@@ -24,13 +24,17 @@ def render(name, contact_name="김하늘"):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--name", required=True, help="님을 제외한 실제 호칭")
+    parser.add_argument("--contact-name", help="실제 발신 담당자명. 없으면 기존 설정 사용")
     args = parser.parse_args()
     config_file = ROOT / ".local" / "config.json"
     config = json.loads(config_file.read_text(encoding="utf-8")) if config_file.exists() else {}
     if config.get("brand", "위시어") != "위시어":
         parser.error("다른 브랜드는 해당 브랜드의 확정 문구가 필요합니다.")
     try:
-        print(render(args.name, config.get("contact_name", "김하늘")), end="")
+        contact_name = args.contact_name or config.get("contact_name")
+        if not contact_name:
+            parser.error("실제 담당자명을 설정하거나 --contact-name으로 지정하세요.")
+        print(render(args.name, contact_name), end="")
     except ValueError as error:
         parser.error(str(error))
 

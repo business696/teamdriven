@@ -71,7 +71,7 @@ def main():
         "brand": "위시어",
         "contact_channel": "meta_creator_marketing_hub",
         "instagram_sender": ask("발신 Instagram ID", current.get("instagram_sender", ""), instagram_id),
-        "contact_name": ask("담당자명", current.get("contact_name", "김하늘"), person_name),
+        "contact_name": ask("담당자명", current.get("contact_name", ""), person_name),
         "notion_database_url": ask("Notion 인플루언서 DB URL", current.get("notion_database_url", ""), notion_url),
         "notion_daily_list_url": ask("Notion 일자 리스트 URL", current.get("notion_daily_list_url", ""), notion_url),
         "creator_marketing_hub_url": ask("로그인 후 브랜드를 선택한 Meta 마케팅허브 URL", current.get("creator_marketing_hub_url", ""), marketing_hub_url),

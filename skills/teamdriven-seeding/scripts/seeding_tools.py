@@ -34,19 +34,29 @@ def normalize_id(value):
     return value
 
 
-def render_message(kind, name=None):
+def clean_person(value):
+    value = value.strip()
+    if not value or len(value) > 80 or any(c in value for c in "\r\n\t[]{}<>") or "://" in value:
+        raise ValueError("이름은 줄바꿈·괄호 없는 확인된 1~80자로 입력하세요")
+    return value
+
+
+def render_message(kind, name=None, contact_name=None, upload_schedule=None):
     filename = "contact.txt" if kind == "contact" else "address-guide.txt"
     body = (ASSETS / filename).read_text(encoding="utf-8-sig").strip()
+    person = clean_person(name) if name is not None else None
     if kind == "address":
-        if name is not None:
-            raise ValueError("주소 가이드에는 호칭 자리표시자가 없습니다")
-        return body
-    if body.count("[호칭]") != 1:
-        raise ValueError("승인 신규 컨택 원문의 호칭 자리표시자를 확인하세요")
-    if name is not None and any(c in name for c in "\r\n\t"):
-        raise ValueError("호칭에 줄바꿈을 넣을 수 없습니다")
-    salutation = name.strip() + "님 " if name and name.strip() else ""
-    return body.replace("[호칭]", salutation)
+        if not upload_schedule or not upload_schedule.strip():
+            raise ValueError("승인된 업로드 일정 문구가 필요합니다")
+        if "[" in upload_schedule or "]" in upload_schedule:
+            raise ValueError("일정 문구에 미입력 자리표시자가 있습니다")
+        greeting = f"안녕하세요, {person}님!" if person else "안녕하세요!"
+        return body.replace("안녕하세요, [이름]님!", greeting).replace("[희망 업로드 일정 문구]", upload_schedule.strip())
+    if body.count("[호칭]") != 1 or body.count("[담당자명]") != 1:
+        raise ValueError("승인 신규 컨택 원문의 이름 자리표시자를 확인하세요")
+    if not contact_name:
+        raise ValueError("실제 발신 담당자명을 --contact-name으로 지정하세요")
+    return body.replace("[호칭]", person + "님 " if person else "").replace("[담당자명]", clean_person(contact_name))
 
 
 def parse_time(value):
@@ -137,7 +147,9 @@ def main():
     normal.add_argument("values", nargs="+")
     render = commands.add_parser("render")
     render.add_argument("kind", choices=["contact", "address"])
-    render.add_argument("--name", help="이미 검증한 이름 또는 활동명. 미지정이면 생략")
+    render.add_argument("--name", help="이미 검증한 수신자 이름 또는 활동명. 미지정이면 생략")
+    render.add_argument("--contact-name", help="실제 발신 담당자명. contact에는 필수")
+    render.add_argument("--upload-schedule", help="승인된 업로드 일정 문구. address에는 필수")
     audit = commands.add_parser("audit")
     audit.add_argument("ledger", type=Path)
     audit.add_argument("--date", required=True, help="한국시간 YYYY-MM-DD")
@@ -147,7 +159,7 @@ def main():
         if args.command == "normalize":
             print(json.dumps([normalize_id(v) for v in args.values], ensure_ascii=False))
         elif args.command == "render":
-            print(render_message(args.kind, args.name))
+            print(render_message(args.kind, args.name, args.contact_name, args.upload_schedule))
         else:
             result = audit_ledger(
                 json.loads(args.ledger.read_text(encoding="utf-8-sig")), args.date, args.manual
